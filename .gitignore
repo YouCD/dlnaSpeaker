@@ -1,0 +1,7 @@
+.idea
+bin
+.DS_Store
+movie.db
+!dist/dist.go
+dist/
+kubeconfig
