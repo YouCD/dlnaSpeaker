@@ -1,10 +1,9 @@
 package server
 
 const (
+	// 参考 http://upnp.org/specs/av/UPnP-av-MediaRenderer-v1-Device.pdf
 	xmlDescription = `<?xml version="1.0" encoding="UTF-8"?>
-<root
-        xmlns:dlna="urn:schemas-dlna-org:device-1-0"
-        xmlns="urn:schemas-upnp-org:device-1-0">
+<root xmlns="urn:schemas-upnp-org:device-1-0">
     <specVersion>
         <major>1</major>
         <minor>0</minor>
@@ -12,35 +11,36 @@ const (
     <device>
         <deviceType>urn:schemas-upnp-org:device:MediaRenderer:1</deviceType>
         <UDN>uuid:%s</UDN>
-        <friendlyName>%s</friendlyName>
-        <maintainer>YouCD</maintainer>
-        <maintainerURL>https://youcd.online</maintainerURL>
-        <modelDescription>AVTransport Media Renderer</modelDescription>
-        <modelName>DLNA-TOOL</modelName>
+		<friendlyName>%s</friendlyName>
+        <manufacturer>YouCD</manufacturer>
+        <manufacturerURL>https://youcd.online</manufacturerURL>
+        <modelDescription>可以让傻瓜音箱变智能的音箱</modelDescription>
+        <modelName>DLNA-Speaker</modelName>
+        <modelNumber>v1.1</modelNumber>
+        <modelURL>https://youcd.online</modelURL>
         <serialNumber>1024</serialNumber>
-        
         <dlna:X_DLNADOC xmlns:dlna="urn:schemas-dlna-org:device-1-0">DMR-1.50</dlna:X_DLNADOC>
         <serviceList>
             <service>
-                <serviceType>urn:schemas-upnp-org:service:AVTransport:1</serviceType>
-                <serviceId>urn:upnp-org:serviceId:AVTransport</serviceId>
-                <controlURL>AVTransport/action</controlURL>
-                <eventSubURL>AVTransport/event</eventSubURL>
-                <SCPDURL>dlna/AVTransport.xml</SCPDURL>
-            </service>
-            <service>
                 <serviceType>urn:schemas-upnp-org:service:RenderingControl:1</serviceType>
                 <serviceId>urn:upnp-org:serviceId:RenderingControl</serviceId>
-                <controlURL>RenderingControl/action</controlURL>
-                <eventSubURL>RenderingControl/event</eventSubURL>
                 <SCPDURL>dlna/RenderingControl.xml</SCPDURL>
+                <controlURL>/dlna/RenderingControl/action</controlURL>
+                <eventSubURL>/dlna/RenderingControl/event</eventSubURL>
             </service>
             <service>
                 <serviceType>urn:schemas-upnp-org:service:ConnectionManager:1</serviceType>
                 <serviceId>urn:upnp-org:serviceId:ConnectionManager</serviceId>
-                <controlURL>ConnectionManager/action</controlURL>
-                <eventSubURL>ConnectionManager/event</eventSubURL>
-                <SCPDURL>dlna/ConnectionManager.xml</SCPDURL>
+                <controlURL>/dlna/ConnectionManager/action</controlURL>
+                <eventSubURL>/dlna/ConnectionManager/event</eventSubURL>
+                <SCPDURL>/dlna/ConnectionManager.xml</SCPDURL>
+            </service>
+            <service>
+                <serviceType>urn:schemas-upnp-org:service:AVTransport:1</serviceType>
+                <serviceId>urn:upnp-org:serviceId:AVTransport</serviceId>
+                <controlURL>/dlna/AVTransport/action</controlURL>
+                <eventSubURL>/dlna/AVTransport/event</eventSubURL>
+                <SCPDURL>/dlna/AVTransport.xml</SCPDURL>
             </service>
             
         </serviceList>

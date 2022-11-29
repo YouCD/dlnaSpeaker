@@ -1,4 +1,6 @@
 # 概述
+[![Build Status](https://app.travis-ci.com/YouCD/dlnaSpeaker.svg?branch=main)](https://app.travis-ci.com/YouCD/dlnaSpeaker)
+
 `dlnaSpeaker`可以模拟成一个DMR设备，让局域网内的设备通过UPnP协议自动发现。
 
 # 背景
@@ -22,19 +24,50 @@
 
 [`blang/mpv`](github.com/blang/mpv)： mpv播放器Golang的轮子
 
-# 命令行
+# 部署
 ```shell
 ./dlnaSpeaker -h               
-Usage of ./dlna:
-  -hook string
-        指定webhook地址
+Usage of bin/dlnaSpeaker/dlnaSpeaker:
   -i string
         指定网卡 (default "wlo1")
   -n string
         指定音箱名字 (default "DLNA音箱")
   -p int
         指定端口 (default 4564)
+  -web.hook string
+        指定webhook地址
+  -white.list string
+        指定ip白名单,多个请用,隔开
 
 ```
+## systemd
+```shell
+workdir=/home/ycd/dlnaSpeaker
+cmd=/home/ycd/dlnaSpeaker/dlnaSpeaker
+eth=br0
+whitelist=192.168.1.128
+webhook=http://192.168.1.8:1880/turnSpeakers
+
+cat >/etc/systemd/system/dlnaSpeaker.service<<EOF
+
+[Unit]
+Description=dlnaSpeaker
+Documentation=https://github.com/YouCD/dlnaSpeaker
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+WorkingDirectory=${workdir}
+ExecStart=${cmd} -i ${eth} -web.hook ${webhook}  -white.list ${whitelist}
+Restart=always
+RestartSec=5
+StartLimitInterval=0
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+
 # 示意图
 ![](./doc/image/image1.png)

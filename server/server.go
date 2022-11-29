@@ -15,6 +15,7 @@ import (
 var (
 	FriendlyName string
 	WebHook      string
+	WhiteIPs     []string
 	render       renderInterface.Render
 )
 
@@ -29,17 +30,32 @@ func NewDLNAServer(renderSocket string, port int) *dlnaServer {
 		port: port,
 	}
 }
+
+const (
+	URLDescription            = "/description.xml"
+	URLAVTransport            = "/dlna/AVTransport.xml"
+	URLAVTransportAction      = "/dlna/AVTransport/action"
+	URLAVTransportEvent       = "/dlna/AVTransport/event"
+	URLRenderingControl       = "/dlna/RenderingControl.xml"
+	URLRenderingControlAction = "/dlna/RenderingControl/action"
+	URLRenderingControlEven   = "/dlna/RenderingControl/event"
+	URLConnectionManager      = "/dlna/ConnectionManager.xml"
+)
+
 func (d *dlnaServer) Run() {
 	background := context.Background()
 	go webhookHandlerOnFree(background, media)
 	r := mux.NewRouter()
-	r.Use(setResponseMiddleware)
-	r.HandleFunc("/description.xml", descriptionHandler).Methods(http.MethodGet)
-	r.HandleFunc("/dlna/AVTransport.xml", avTransportHandler).Methods(http.MethodGet)
-	r.HandleFunc("/dlna/RenderingControl.xml", renderingControlHandler).Methods(http.MethodGet)
-	r.HandleFunc("/RenderingControl/action", renderingControlActionHandler).Methods(http.MethodPost)
-	r.HandleFunc("/AVTransport/action", avTransportActionHandler).Methods(http.MethodPost)
-	r.HandleFunc("/dlna/ConnectionManager.xml", connectionManagerHandler).Methods(http.MethodPost)
+	r.Use(whiteIPsMiddleware, setResponseMiddleware)
+	r.HandleFunc(URLDescription, descriptionHandler).Methods(http.MethodGet)
+	r.HandleFunc(URLAVTransport, avTransportHandler).Methods(http.MethodGet)
+	r.HandleFunc(URLAVTransportAction, avTransportActionHandler).Methods(http.MethodPost)
+	r.HandleFunc(URLAVTransportEvent, avTransportEventHandler).Methods(http.MethodPost)
+	r.HandleFunc(URLRenderingControl, renderingControlHandler).Methods(http.MethodGet)
+	r.HandleFunc(URLRenderingControlAction, renderingControlActionHandler).Methods(http.MethodPost)
+	r.HandleFunc(URLRenderingControlEven, renderingControlEvenHandler).Methods(http.MethodPost)
+	r.HandleFunc(URLConnectionManager, connectionManagerHandler).Methods(http.MethodPost)
+
 	ip := fmt.Sprintf("%s:%d", "0.0.0.0", d.port)
 
 	processed := make(chan struct{})
@@ -55,18 +71,18 @@ func (d *dlnaServer) Run() {
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
 		if err := srv.Shutdown(ctx); nil != err {
-			log.Errorf("DLNA Server shutdown failed, err: %v", err)
+			log.Errorf("DLNA Speaker shutdown failed, err: %v", err)
 			os.Exit(1)
 		}
-		log.Info("DLNA Server gracefully shutdown")
+		log.Info("DLNA Speaker gracefully shutdown")
 		os.Remove("/tmp/YCD_mpvsocket")
 		close(processed)
 	}()
-	log.Infof("DLNA Server run the http://%s", ip)
+	log.Infof("DLNA Speaker run the http://%s", ip)
 
 	err := srv.ListenAndServe()
 	if http.ErrServerClosed != err {
-		log.Errorf("DLNA Server not gracefully shutdown, err :%v", err)
+		log.Errorf("DLNA Speaker not gracefully shutdown, err :%v", err)
 		os.Exit(1)
 	}
 

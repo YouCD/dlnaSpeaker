@@ -83,6 +83,36 @@ func avTransportActionHandler(writer http.ResponseWriter, request *http.Request)
 
 }
 
+func avTransportEventHandler(writer http.ResponseWriter, request *http.Request) {
+
+	body := request.Body
+	defer body.Close()
+	all, err := io.ReadAll(body)
+	if err != nil {
+		log.Error(err)
+	}
+	fmt.Println("-----------------------avTransportEventHandler-----------------------------")
+	fmt.Println(request.Header)
+	fmt.Println(string(all))
+	fmt.Println("-----------------------avTransportEventHandler-----------------------------")
+
+}
+
+func renderingControlEvenHandler(writer http.ResponseWriter, request *http.Request) {
+
+	body := request.Body
+	defer body.Close()
+	all, err := io.ReadAll(body)
+	if err != nil {
+		log.Error(err)
+	}
+	fmt.Println("-----------------------renderingControlEvenHandler-----------------------------")
+	fmt.Println(request.Header)
+	fmt.Println(string(all))
+	fmt.Println("-----------------------renderingControlEvenHandler-----------------------------")
+
+}
+
 type Data struct {
 	IP    string
 	Media string
